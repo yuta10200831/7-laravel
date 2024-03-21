@@ -13,6 +13,13 @@ class BlogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct()
+    {
+         // このコントローラーの全アクションにログインを必須にする
+        $this->middleware('auth');
+    }
+
 public function index(Request $request)
 {
     $query = Blog::query();
@@ -59,17 +66,13 @@ public function index(Request $request)
             'contents' => 'required',
         ]);
 
-        if (Auth::check()) {
-            Blog::create([
-                'title' => $request->title,
-                'contents' => $request->contents,
-                'user_id' => Auth::id(),
-            ]);
+        Blog::create([
+            'title' => $request->title,
+            'contents' => $request->contents,
+            'user_id' => Auth::id(),
+        ]);
 
-            return redirect('/')->with('status', 'ブログが投稿されました！');
-        } else {
-            return redirect()->route('login')->withErrors(['必要です']);
-        }
+        return redirect('/')->with('status', 'ブログが投稿されました！');
     }
     /**
      * Display the specified resource.
