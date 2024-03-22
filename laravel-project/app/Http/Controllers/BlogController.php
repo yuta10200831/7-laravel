@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Blog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -118,6 +119,25 @@ public function index(Request $request)
      */
     public function destroy($id)
     {
-        //
+        $blog = Blog::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $blog->delete();
+        return redirect()->route('mypage')->with('status', '記事を削除しました。');
+    }
+
+    public function myPage()
+    {
+        $blogs = Blog::where('user_id', Auth::id())
+                     ->get()
+                     ->map(function ($blog) {
+                        $blog->contents = Str::limit($blog->contents, 15);
+                        return $blog;
+                     });
+        return view('blogs.mypage', compact('blogs'));
+    }
+
+    public function myArticleDetail($id)
+    {
+        $blog = Blog::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        return view('blogs.myarticledetail', compact('blog'));
     }
 }
