@@ -96,7 +96,8 @@ public function index(Request $request)
      */
     public function edit($id)
     {
-        //
+        $blog = Blog::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        return view('blogs.edit', compact('blog'));
     }
 
     /**
@@ -108,9 +109,19 @@ public function index(Request $request)
      */
     public function update(Request $request, $id)
     {
-        //
-    }
+        $request->validate([
+            'title' => 'required|max:255',
+            'contents' => 'required',
+        ]);
 
+        $blog = Blog::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $blog->update([
+            'title' => $request->title,
+            'contents' => $request->contents,
+        ]);
+
+        return redirect()->route('mypage')->with('status', 'ブログを更新しました！');
+    }
     /**
      * Remove the specified resource from storage.
      *

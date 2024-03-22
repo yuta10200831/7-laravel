@@ -22,9 +22,9 @@ Route::post('/comments', [CommentController::class, 'store'])->name('comments.st
 
 Route::middleware('auth')->group(function () {
     Route::get('/mypage', [BlogController::class, 'myPage'])->name('mypage');
-
     Route::get('/myarticledetail/{id}', [BlogController::class, 'myArticleDetail'])->name('blogs.myarticledetail');
-
+    Route::get('/blogs/{id}/edit', [BlogController::class, 'edit'])->name('blogs.edit');
+    Route::put('/blogs/{id}', [BlogController::class, 'update'])->name('blogs.update');
     Route::post('/post/delete/{id}', [BlogController::class, 'destroy'])->name('post.delete');
 });
 
