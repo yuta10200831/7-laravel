@@ -20,8 +20,12 @@ Route::resource('blogs', BlogController::class);
 
 Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/mypage', [BlogController::class, 'myPage'])->name('mypage');
+
+    Route::get('/myarticledetail/{id}', [BlogController::class, 'myArticleDetail'])->name('blogs.myarticledetail');
+
+    Route::post('/post/delete/{id}', [BlogController::class, 'destroy'])->name('post.delete');
+});
 
 require __DIR__.'/auth.php';

@@ -25,8 +25,8 @@
    @endif
    <nav>
     <a href="{{ url('/') }}" class="text-white hover:underline px-3">ホーム</a>
-    <a href="{{ url('/mypage') }}" class="text-white hover:underline px-3">マイページ</a>
-    <a href="{{ route('blogs.create') }}" class="text-white hover:underline px-3">新規投稿</a>
+    <a href="{{ route('mypage') }}" class="text-white hover:underline px-3">マイページ</a>
+    <a href="{{ route('blogs.create') }}" class="text-wxhite hover:underline px-3">新規投稿</a>
     @auth
     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
      class="text-white hover:underline px-3">ログアウト</a>
