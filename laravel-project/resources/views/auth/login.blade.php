@@ -29,7 +29,7 @@
       ログイン
      </button>
      <a href="{{ route('register') }}" class="underline text-sm text-indigo-600 hover:text-indigo-900">
-      ログイン画面へ
+      新規登録画面へ
      </a>
     </div>
    </form>
