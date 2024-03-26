@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,8 @@ use App\Http\Controllers\BlogController;
 Route::get('/', [BlogController::class, 'index']);
 
 Route::resource('blogs', BlogController::class);
+
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
