@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
+use App\UseCase\Comment\CommentCreateInput;
+use App\UseCase\Comment\CommentCreateInteractor;
 
 class CommentController extends Controller
 {
@@ -34,23 +36,23 @@ class CommentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, CommentCreateInteractor $commentCreateInteractor)
     {
         $request->validate([
             'comment' => 'required',
-            'blog_id' => 'required|exists:blogs,id'
+            'blog_id' => 'required|exists:blogs,id',
         ]);
 
-        Comment::create([
-            'user_id' => Auth::id(),
-            'blog_id' => $request->blog_id,
-            'commenter_name' => Auth::user()->name,
-            'comments' => $request->comment,
-        ]);
+        $input = new CommentCreateInput($request->input('blog_id'), $request->input('comment'));
+        $output = $commentCreateInteractor->handle($input);
 
-        return redirect()->route('blogs.show', $request->blog_id)
-                         ->with('status', 'コメントを投稿しました！');
+        if ($output->isSuccess()) {
+            return redirect()->route('blogs.show', $output->getBlogId())->with('status', $output->getMessage());
+        } else {
+            return redirect()->route('blogs.show', $output->getBlogId())->withErrors($output->getMessage());
+        }
     }
+
     /**
      * Display the specified resource.
      *
