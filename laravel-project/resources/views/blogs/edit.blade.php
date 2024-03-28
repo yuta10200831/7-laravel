@@ -21,6 +21,20 @@
      class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline h-48">{{ old('contents', $blog->contents) }}</textarea>
    </div>
 
+   <!-- 公開・非公開選択のラジオボタンを追加 -->
+   <div class="mb-4">
+    <label for="is_published_yes" class="inline-flex items-center mr-6">
+     <input id="is_published_yes" type="radio" name="is_published" value="1" {{ $blog->is_published ? 'checked' : '' }}
+      class="form-radio text-blue-600">
+     <span class="ml-2">公開</span>
+    </label>
+    <label for="is_published_no" class="inline-flex items-center">
+     <input id="is_published_no" type="radio" name="is_published" value="0" {{ !$blog->is_published ? 'checked' : '' }}
+      class="form-radio text-blue-600">
+     <span class="ml-2">非公開</span>
+    </label>
+   </div>
+
    <div class="flex items-center justify-center">
     <button type="submit"
      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">更新する</button>

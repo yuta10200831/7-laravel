@@ -117,8 +117,9 @@ class BlogController extends Controller
     {
         $title = new Title($request->input('title'));
         $contents = new Content($request->input('contents'));
-        $input = new EditBlogInput($id, $title, $contents);
+        $is_published = $request->input('is_published') === '1' ? true : false;
 
+        $input = new EditBlogInput($id, $title, $contents, $is_published);
         $output = $this->editBlogInteractor->handle($input);
 
         if ($output->isSuccess()) {
