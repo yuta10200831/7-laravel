@@ -6,6 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Blog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use App\UseCase\Blog\CreateBlogInput;
+use App\UseCase\Blog\CreateBlogInteractor;
+use App\UseCase\Blog\EditBlogInput;
+use App\UseCase\Blog\EditBlogInteractor;
+use App\UseCase\Blog\BlogPageInteractor;
+use App\UseCase\Blog\MyBlogsInteractor;
+use App\UseCase\Blog\MyBlogDetailInteractor;
+use App\Models\ValueObjects\Title;
+use App\Models\ValueObjects\Content;
 
 class BlogController extends Controller
 {
@@ -15,34 +25,29 @@ class BlogController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function __construct()
-    {
-         // このコントローラーの全アクションにログインを必須にする
+    public function __construct(
+        CreateBlogInteractor $createBlogInteractor,
+        EditBlogInteractor $editBlogInteractor,
+        BlogPageInteractor $blogPageInteractor,
+        MyBlogsInteractor $myBlogsInteractor,
+        MyBlogDetailInteractor $myBlogDetailInteractor
+    ) {
         $this->middleware('auth');
+        $this->createBlogInteractor = $createBlogInteractor;
+        $this->editBlogInteractor = $editBlogInteractor;
+        $this->blogPageInteractor = $blogPageInteractor;
+        $this->myBlogsInteractor = $myBlogsInteractor;
+        $this->myBlogDetailInteractor = $myBlogDetailInteractor;
     }
 
-public function index(Request $request)
-{
-    $query = Blog::query();
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        $sort = $request->input('sort');
 
-    // 検索処理
-    $search = $request->input('search');
-    if (!empty($search)) {
-        $query->where('title', 'LIKE', '%' . $search . '%')
-              ->orWhere('contents', 'LIKE', '%' . $search . '%');
+        $blogs = $this->blogPageInteractor->handle($search, $sort);
+        return view('blogs.index', compact('blogs'));
     }
-
-    // 並び替え処理
-    $sort = $request->input('sort');
-    if ($sort === 'newest') {
-        $query->orderBy('created_at', 'desc');
-    } elseif ($sort === 'oldest') {
-        $query->orderBy('created_at', 'asc');
-    }
-
-    $blogs = $query->get();
-    return view('blogs.index', compact('blogs'));
-}
 
     /**
      * Show the form for creating a new resource.
@@ -62,19 +67,20 @@ public function index(Request $request)
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|max:255',
-            'contents' => 'required',
-        ]);
+        $title = $request->input('title');
+        $contents = $request->input('contents');
+        $input = new CreateBlogInput($title, $contents);
+        $interactor = new CreateBlogInteractor();
+        $output = $interactor->handle($input);
 
-        Blog::create([
-            'title' => $request->title,
-            'contents' => $request->contents,
-            'user_id' => Auth::id(),
-        ]);
-
-        return redirect('/')->with('status', 'ブログが投稿されました！');
+        if ($output->isSuccess()) {
+            return redirect()->route('blogs.index')->with('status', $output->getMessage());
+        } else {
+            return redirect()->route('blogs.create')->withErrors('ブログの投稿に失敗しました。');
+        }
     }
+
+
     /**
      * Display the specified resource.
      *
@@ -109,19 +115,21 @@ public function index(Request $request)
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'title' => 'required|max:255',
-            'contents' => 'required',
-        ]);
+        $title = new Title($request->input('title'));
+        $contents = new Content($request->input('contents'));
+        $input = new EditBlogInput($id, $title, $contents);
 
-        $blog = Blog::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        $blog->update([
-            'title' => $request->title,
-            'contents' => $request->contents,
-        ]);
+        $output = $this->editBlogInteractor->handle($input);
 
-        return redirect()->route('mypage')->with('status', 'ブログを更新しました！');
+        if ($output->isSuccess()) {
+            return redirect()->route('blogs.myarticledetail', $id)->with('status', $output->getMessage());
+        } else {
+            return redirect()->route('blogs.edit', $id)
+                             ->withErrors(['message' => $output->getMessage()])
+                             ->withInput();
+        }
     }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -137,18 +145,14 @@ public function index(Request $request)
 
     public function myPage()
     {
-        $blogs = Blog::where('user_id', Auth::id())
-                     ->get()
-                     ->map(function ($blog) {
-                        $blog->contents = Str::limit($blog->contents, 15);
-                        return $blog;
-                     });
+        $userId = Auth::id();
+        $blogs = $this->myBlogsInteractor->handle($userId);
         return view('blogs.mypage', compact('blogs'));
     }
 
     public function myArticleDetail($id)
     {
-        $blog = Blog::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $blog = $this->myBlogDetailInteractor->handle($id);
         return view('blogs.myarticledetail', compact('blog'));
     }
 }
