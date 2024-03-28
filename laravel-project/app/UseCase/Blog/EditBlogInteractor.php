@@ -4,8 +4,6 @@ namespace App\UseCase\Blog;
 
 use App\Models\Blog;
 use Illuminate\Support\Facades\Validator;
-use App\Models\ValueObjects\Title;
-use App\Models\ValueObjects\Content;
 
 final class EditBlogInteractor
 {
@@ -14,6 +12,7 @@ final class EditBlogInteractor
         $validator = Validator::make($input->all(), [
             'title' => 'required|max:255',
             'contents' => 'required',
+            'is_published' => 'required|boolean'
         ]);
 
         if ($validator->fails()) {
@@ -25,8 +24,10 @@ final class EditBlogInteractor
             return new EditBlogOutput(false, "ブログが見つかりません。");
         }
 
-        $blog->title = new Title($input->getTitle());
-        $blog->contents = new Content($input->getContents());
+        $blog->title = (string)$input->getTitle();
+        $blog->contents = (string)$input->getContents();
+        $blog->is_published = $input->getIsPublished();
+
         $blog->save();
 
         return new EditBlogOutput(true, "ブログを更新しました。");

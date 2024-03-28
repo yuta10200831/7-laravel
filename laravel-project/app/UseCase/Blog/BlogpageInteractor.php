@@ -8,11 +8,13 @@ final class BlogPageInteractor
 {
     public function handle($search, $sort)
     {
-        $query = Blog::query();
+        $query = Blog::where('is_published', true);
 
         if (!empty($search)) {
-            $query->where('title', 'LIKE', "%{$search}%")
-                ->orWhere('contents', 'LIKE', "%{$search}%");
+            $query->where(function($query) use ($search) {
+                $query->where('title', 'LIKE', "%{$search}%")
+                      ->orWhere('contents', 'LIKE', "%{$search}%");
+            });
         }
 
         if ($sort === 'newest') {
@@ -21,6 +23,10 @@ final class BlogPageInteractor
             $query->orderBy('created_at', 'asc');
         }
 
-        return $query->with('comments')->get();
+        return $query->with(['comments' => function($query) {
+            $query->whereHas('blog', function($query) {
+                $query->where('is_published', true);
+            });
+        }])->get();
     }
 }
