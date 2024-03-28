@@ -26,6 +26,14 @@
     <time datetime="{{ $blog->created_at }}">{{ $blog->created_at->format('Y年m月d日') }}</time>
     <p class="text-gray-700 mt-3">{{ Str::limit($blog->contents, 100) }}</p>
     <a href="{{ route('blogs.show', $blog->id) }}" class="block mt-4 text-blue-500 hover:underline">記事詳細へ</a>
+    {{-- お気に入りボタン --}}
+    <form action="{{ route('blogs.favorite', $blog->id) }}" method="POST" class="ml-4">
+     @csrf
+     <button type="submit"
+      class="{{ $blog->isFavoritedBy(Auth::user()) ? 'text-yellow-500' : 'text-gray-500' }} hover:text-yellow-600">
+      <i class="fas fa-star"></i>
+     </button>
+    </form>
    </div>
   </article>
   @endforeach

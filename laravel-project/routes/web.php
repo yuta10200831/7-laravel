@@ -28,4 +28,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/post/delete/{id}', [BlogController::class, 'destroy'])->name('post.delete');
 });
 
+Route::post('/blogs/{blog}/favorite', [BlogController::class, 'favorite'])->name('blogs.favorite');
+
 require __DIR__.'/auth.php';

@@ -117,8 +117,9 @@ class BlogController extends Controller
     {
         $title = new Title($request->input('title'));
         $contents = new Content($request->input('contents'));
-        $input = new EditBlogInput($id, $title, $contents);
+        $is_published = $request->input('is_published') === '1' ? true : false;
 
+        $input = new EditBlogInput($id, $title, $contents, $is_published);
         $output = $this->editBlogInteractor->handle($input);
 
         if ($output->isSuccess()) {
@@ -154,5 +155,18 @@ class BlogController extends Controller
     {
         $blog = $this->myBlogDetailInteractor->handle($id);
         return view('blogs.myarticledetail', compact('blog'));
+    }
+
+    public function favorite(Request $request, Blog $blog)
+    {
+        $user = Auth::user();
+
+        if (!$blog) {
+            return back()->with('error', 'ブログが見つかりませんでした。');
+        }
+
+        $user->favorites()->toggle($blog->id);
+
+        return back()->with('status', 'お気に入りの状態を変更しました。');
     }
 }
