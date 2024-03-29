@@ -10,12 +10,14 @@ final class EditBlogInput
     private $blogId;
     private $title;
     private $contents;
+    private $is_published;
 
-    public function __construct($blogId, string $title, string $contents)
+    public function __construct($blogId, Title $title, Content $contents, $is_published)
     {
         $this->blogId = $blogId;
         $this->title = $title;
         $this->contents = $contents;
+        $this->is_published = $is_published;
     }
 
     public function getBlogId()
@@ -23,21 +25,27 @@ final class EditBlogInput
         return $this->blogId;
     }
 
-    public function getTitle(): string
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function getContents(): string
+    public function getContents()
     {
         return $this->contents;
     }
 
-    public function all(): array
+    public function getIsPublished()
+    {
+        return $this->is_published;
+    }
+
+    public function all()
     {
         return [
-            'title' => $this->title,
-            'contents' => $this->contents
+            'title' => $this->title->getValue(),
+            'contents' => $this->contents->getValue(),
+            'is_published' => $this->is_published,
         ];
     }
 }
