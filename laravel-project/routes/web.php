@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
 Route::post('/blogs/{blog}/favorite', [BlogController::class, 'favorite'])->name('blogs.favorite');
 
 Route::post('/blogs/{blog}/bookmark', [BookmarkController::class, 'store'])->name('blogs.bookmark');
-    
+
+Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index')->middleware('auth');
+
 
 require __DIR__.'/auth.php';
