@@ -156,4 +156,17 @@ class BlogController extends Controller
         $blog = $this->myBlogDetailInteractor->handle($id);
         return view('blogs.myarticledetail', compact('blog'));
     }
+
+    public function favorite(Request $request, Blog $blog)
+    {
+        $user = Auth::user();
+
+        if (!$blog) {
+            return back()->with('error', 'ブログが見つかりませんでした。');
+        }
+
+        $user->favorites()->toggle($blog->id);
+
+        return back()->with('status', 'お気に入りの状態を変更しました。');
+    }
 }
