@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,5 +36,8 @@ Route::post('/blogs/{blog}/bookmark', [BookmarkController::class, 'store'])->nam
 
 Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index')->middleware('auth');
 
+Route::resource('categories', CategoryController::class);
+
+Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 
 require __DIR__.'/auth.php';

@@ -19,6 +19,16 @@
     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-40"
     required></textarea>
   </div>
+  {{-- カテゴリを選択するセレクトボックスを追加 --}}
+  <div class="mb-4">
+   <label for="category_id" class="block text-blue-700 text-sm font-bold mb-2">カテゴリ:</label>
+   <select name="category_id" id="category_id" class="border p-2 rounded flex-grow" required>
+    <option value="">選択してください</option>
+    @foreach ($categories as $category)
+    <option value="{{ $category->id }}">{{ $category->name }}</option>
+    @endforeach
+   </select>
+  </div>
   <div class="flex items-center justify-between">
    <button type="submit"
     class="bg-yellow-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
