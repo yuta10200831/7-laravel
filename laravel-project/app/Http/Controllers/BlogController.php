@@ -44,10 +44,13 @@ class BlogController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $category = $request->input('category_id');
         $sort = $request->input('sort');
 
-        $blogs = $this->blogPageInteractor->handle($search, $sort);
-        return view('blogs.index', compact('blogs'));
+        $blogs = $this->blogPageInteractor->handle($search, $category, $sort);
+        $categories = Category::all();
+
+        return view('blogs.index', compact('blogs', 'categories'));
     }
 
     /**
