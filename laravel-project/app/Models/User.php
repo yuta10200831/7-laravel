@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Blog::class, 'favorites')->withTimestamps();
     }
+
+    public function bookmarks()
+    {
+        return $this->belongsToMany(Blog::class, 'bookmarks')->withTimestamps();
+    }
 }

@@ -36,4 +36,19 @@ class Blog extends Model
 
         return $this->favorites()->where('user_id', $user->id)->exists();
     }
+
+    public function bookmarkedBy()
+    {
+        return $this->belongsToMany(User::class, 'bookmarks');
+    }
+
+    public function isBookmarkedBy(User $user)
+    {
+        return $this->bookmarks()->where('user_id', $user->id)->exists();
+    }
+
+    public function bookmarks()
+{
+    return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
+}
 }

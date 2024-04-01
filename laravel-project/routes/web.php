@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\BookmarkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,5 +30,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/blogs/{blog}/favorite', [BlogController::class, 'favorite'])->name('blogs.favorite');
+
+Route::post('/blogs/{blog}/bookmark', [BookmarkController::class, 'store'])->name('blogs.bookmark');
+
+Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index')->middleware('auth');
+
 
 require __DIR__.'/auth.php';

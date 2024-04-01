@@ -22,6 +22,14 @@
   @foreach ($blogs as $blog)
   <article class="bg-white rounded-lg shadow overflow-hidden">
    <div class="p-4">
+    {{-- ブックマークボタン --}}
+    <form action="{{ route('blogs.bookmark', $blog->id) }}" method="POST" class="ml-4">
+     @csrf
+     <button type="submit"
+      class="{{ $blog->isBookmarkedBy(Auth::user()) ? 'text-blue-500' : 'text-gray-500' }} hover:text-blue-600">
+      <i class="fas fa-bookmark"></i>
+     </button>
+    </form>
     <h3 class="font-bold mb-2">{{ $blog->title }}</h3>
     <time datetime="{{ $blog->created_at }}">{{ $blog->created_at->format('Y年m月d日') }}</time>
     <p class="text-gray-700 mt-3">{{ Str::limit($blog->contents, 100) }}</p>
