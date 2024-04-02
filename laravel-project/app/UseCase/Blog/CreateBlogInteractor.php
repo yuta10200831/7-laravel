@@ -5,6 +5,7 @@ namespace App\UseCase\Blog;
 use App\UseCase\Blog\CreateBlogInput;
 use App\UseCase\Blog\CreateBlogOutput;
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
 use App\Models\ValueObjects\Title;
 use App\Models\ValueObjects\Content;
@@ -17,6 +18,7 @@ final class CreateBlogInteractor
         $validator = Validator::make($input->all(), [
             'title' => 'required|max:255',
             'contents' => 'required',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         if ($validator->fails()) {
@@ -33,6 +35,7 @@ final class CreateBlogInteractor
         Blog::create([
             'title' => $title->getValue(),
             'contents' => $contents->getValue(),
+            'category_id' => $input->getCategoryId(),
             'user_id' => $userId
         ]);
 

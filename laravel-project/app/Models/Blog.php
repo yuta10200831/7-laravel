@@ -10,7 +10,7 @@ class Blog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'title', 'contents', 'is_published'
+        'user_id', 'title', 'contents', 'is_published', 'category_id',
     ];
 
     public function comments()
@@ -48,7 +48,12 @@ class Blog extends Model
     }
 
     public function bookmarks()
-{
-    return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
-}
+    {
+        return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

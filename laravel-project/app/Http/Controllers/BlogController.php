@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -43,10 +44,13 @@ class BlogController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $category = $request->input('category_id');
         $sort = $request->input('sort');
 
-        $blogs = $this->blogPageInteractor->handle($search, $sort);
-        return view('blogs.index', compact('blogs'));
+        $blogs = $this->blogPageInteractor->handle($search, $category, $sort);
+        $categories = Category::all();
+
+        return view('blogs.index', compact('blogs', 'categories'));
     }
 
     /**
@@ -56,7 +60,8 @@ class BlogController extends Controller
      */
     public function create()
     {
-        return view('blogs.create');
+        $categories = Category::all();
+        return view('blogs.create', compact('categories'));
     }
 
     /**
@@ -69,7 +74,8 @@ class BlogController extends Controller
     {
         $title = $request->input('title');
         $contents = $request->input('contents');
-        $input = new CreateBlogInput($title, $contents);
+        $category_id = (int) $request->input('category_id');
+        $input = new CreateBlogInput($title, $contents, $category_id);
         $interactor = new CreateBlogInteractor();
         $output = $interactor->handle($input);
 
